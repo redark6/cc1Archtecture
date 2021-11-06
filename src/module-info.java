@@ -1,0 +1,2 @@
+module cc1Architecture {
+}
