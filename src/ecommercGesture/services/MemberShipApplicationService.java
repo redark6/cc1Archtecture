@@ -41,7 +41,7 @@ public class MemberShipApplicationService {
 	}
 	
 	private boolean hasAppliantCorrectInformation(UserEntity user) {
-		if(userService.userHasValidInformations(user)) {
+		if(userService.userHasValidInformations(user) && !membershipService.isMember(user)) {
 			return true;
 		}
 		return false;

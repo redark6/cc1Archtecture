@@ -1,5 +1,8 @@
 package ecommercGesture.services;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import ecommercGesture.entities.MembershipEntity;
 import ecommercGesture.entities.UserEntity;
 import ecommercGesture.repositories.MembershipRepository;
@@ -21,7 +24,14 @@ public class MembershipService {
 	}
 	
 	public boolean isMember(UserEntity user) {
-		return membershipRepository.isMember(user);
+		LocalDate today = LocalDate.now();
+		List<MembershipEntity> memberships = membershipRepository.getMemberShipsByUser(user);
+		for (MembershipEntity membership : memberships) {
+			if( (membership.getStartMembership().isBefore(today) || membership.getStartMembership().isEqual(today) ) && 
+					(membership.getEndMembership().isAfter(today) || membership.getEndMembership().isEqual(today) ) )
+				return true;
+		}
+		return false;
 	}
 	
 }

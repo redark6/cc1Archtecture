@@ -1,5 +1,6 @@
 package ecommercGesture.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import ecommercGesture.entities.MembershipEntity;
@@ -9,6 +10,6 @@ public interface MembershipRepository {
 	
 	Optional<MembershipEntity> getMemberById(int id);
 	void addMember(MembershipEntity membership);
-	boolean isMember(UserEntity user);
+	List<MembershipEntity> getMemberShipsByUser(UserEntity user);
 	
 }
