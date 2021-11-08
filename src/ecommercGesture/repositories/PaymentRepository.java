@@ -6,7 +6,8 @@ import ecommercGesture.entities.PaymentEntity;
 
 public interface PaymentRepository {
 	
+	int getNextId();
 	Optional<PaymentEntity> getPayment(int id);
-	void addPayment(PaymentEntity payement);
+	int addPayment(PaymentEntity payment);
 
 }

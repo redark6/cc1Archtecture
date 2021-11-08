@@ -7,6 +7,10 @@ public class PaymentService {
 	
 	private final PaymentRepository paymentRepository;
 	
+	public int getNextId() {
+		return paymentRepository.getNextId();
+	}
+	
 	public PaymentService(PaymentRepository paymentRepository) {
 		this.paymentRepository = paymentRepository;
 	}
@@ -15,8 +19,8 @@ public class PaymentService {
 		return paymentRepository.getPayment(id).get();
 	}
 	
-	public void addPayment(PaymentEntity payment) {
-		paymentRepository.addPayment(payment);
+	public int addPayment(PaymentEntity payment) {
+		return paymentRepository.addPayment(payment);
 	}
 
 }

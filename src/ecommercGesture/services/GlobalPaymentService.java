@@ -13,13 +13,17 @@ public class GlobalPaymentService {
 		this.paymentService = paymentService;
 		this.externalPaymentService = externalPaymentService;
 	}
+	
+	public int getNextId() {
+		return paymentService.getNextId();
+	}
 
 	public PaymentEntity getPayment(int id) {
 		return paymentService.getPayment(id);
 	}
 	
-	public void addPayment(PaymentEntity payment) {
-		paymentService.addPayment(payment);
+	public int addPayment(PaymentEntity payment) {
+		return paymentService.addPayment(payment);
 	}
 	
 	public boolean pay(BillingInformation billing, double transactionPrice) {
