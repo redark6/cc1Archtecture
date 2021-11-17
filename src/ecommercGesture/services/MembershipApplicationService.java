@@ -5,41 +5,38 @@ import java.time.LocalDate;
 import ecommercGesture.Dto.MembershipApplication;
 import ecommercGesture.additionalClass.ApplicationResultIds;
 import ecommercGesture.additionalClass.BillingInformation;
-import ecommercGesture.entities.Member;
-import ecommercGesture.entities.PaymentEntity;
+import ecommercGesture.domain.UserMembershipChecker;
+import ecommercGesture.exception.InvalidUserException;
+import ecommercGesture.exception.PaymentErrorException;
+import ecommercGesture.objects.*;
 
 public class MembershipApplicationService {
 	
+	private final UserService userService;
 	private final MemberService memberService;
 	private final GlobalPaymentService globalPaymentService;
-	
-	public MembershipApplicationService(MemberService memberService, GlobalPaymentService globalPaymentService) {
+	public MembershipApplicationService(UserService userService,MemberService memberService, GlobalPaymentService globalPaymentService) {
+		this.userService = userService;
 		this.memberService = memberService;
 		this.globalPaymentService = globalPaymentService;
 	}
 	
-	public ApplicationResultIds applyForMembership(MembershipApplication Application) throws Exception {
+	public ApplicationResultIds applyForMembership(MembershipApplication application) throws Exception {
 		LocalDate membershipApplicationDate = LocalDate.now();
-		Member appliant = Member.of(memberService.getNextId(), Application.getName(), Application.getLastName(), Application.getPassword(), membershipApplicationDate, getApplicationEndDate(membershipApplicationDate,Application.getMembershipDuration()));
-		if(hasAppliantCorrectInformation(appliant)) {
-			if(processToPayment(Application.getBilling(),Application.getApplictionPrice())) {
-				PaymentEntity newPayment = PaymentEntity.of(globalPaymentService.getNextId(), appliant, Application.getApplictionPrice(), membershipApplicationDate);
-				int paymentId = this.globalPaymentService.addPayment(newPayment);
-				int memberId = this.memberService.addMember(appliant);
+		User appliant = userService.getUserById(Id.of(application.getUserId()));
+		if(UserMembershipChecker.userHasValidInformationsToApplyMembership(appliant)) {
+			if(processToPayment(application.getBilling(),application.getMembershipDetails().getApplictionPrice())) {
+				Member newMember = Member.of(memberService.getNextId(),appliant, membershipApplicationDate, getApplicationEndDate(membershipApplicationDate,application.getMembershipDetails().getMembershipDuration()));
+				Payment newPayment = Payment.of(globalPaymentService.getNextId(), appliant, application.getMembershipDetails().getApplictionPrice(), membershipApplicationDate);
+				Id paymentId = this.globalPaymentService.addPayment(newPayment);
+				Id memberId = this.memberService.addMember(newMember);
 				return ApplicationResultIds.of(memberId, paymentId);
 			}else {
-				throw new Exception("Le processus de paiement à échoué");
+				throw PaymentErrorException.error();
 			}
 		}else {
-			throw new Exception("Les informations de l'utilisateur sont incomplètes");
+			throw InvalidUserException.withId(appliant.getId());
 		}
-	}
-	
-	private boolean hasAppliantCorrectInformation(Member appliant) {
-		if(memberService.memberHasValidInformations(appliant)) {
-			return true;
-		}
-		return false;
 	}
 	
 	private boolean processToPayment(BillingInformation billing, double transactionPrice) {

@@ -1,32 +1,32 @@
-package ecommercGesture.entities;
+package ecommercGesture.objects;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class PaymentEntity {
+public class Payment {
 	
-	private final int id;
-	private final Member member;
+	private final Id id;
+	private final User user;
 	private final double transactionPrice;
 	private final LocalDate paymentDate;
 	
-	private PaymentEntity(int id, Member member, double transactionPrice, LocalDate paymentDate) {
+	private Payment(Id id, User user, double transactionPrice, LocalDate paymentDate) {
 		this.id = id;
-		this.member = Objects.requireNonNull(member,"Buyer id must be not null");
+		this.user = Objects.requireNonNull(user,"User id must be not null");
 		this.transactionPrice = Objects.requireNonNull(transactionPrice,"Transaction price must be not null");
 		this.paymentDate = Objects.requireNonNull(paymentDate,"Payment date must be not null");
 	}
 	
-    public static PaymentEntity of(int id, Member member, double transactionPrice,LocalDate paymentDate) {
-        return new PaymentEntity(id, member, transactionPrice, paymentDate);
+    public static Payment of(Id id, User user, double transactionPrice,LocalDate paymentDate) {
+        return new Payment(id, user, transactionPrice, paymentDate);
     }
 
-	public int getId() {
+	public Id getId() {
 		return id;
 	}
 	
-	public Member getMember() {
-		return member;
+	public User getMember() {
+		return user;
 	}
 
 	public double getTransactionPrice() {
@@ -39,20 +39,20 @@ public class PaymentEntity {
 
 	@Override
 	public String toString() {
-		return "PaymentEntity [id=" + id + ", member=" + member + ", transactionPrice=" + transactionPrice
-				+ ", paymentDate=" + paymentDate + "]";
+		return "Payment [id=" + id + ", user=" + user + ", transactionPrice=" + transactionPrice + ", paymentDate="
+				+ paymentDate + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((member == null) ? 0 : member.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((paymentDate == null) ? 0 : paymentDate.hashCode());
 		long temp;
 		temp = Double.doubleToLongBits(transactionPrice);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
@@ -64,13 +64,11 @@ public class PaymentEntity {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PaymentEntity other = (PaymentEntity) obj;
-		if (id != other.id)
-			return false;
-		if (member == null) {
-			if (other.member != null)
+		Payment other = (Payment) obj;
+		if (id == null) {
+			if (other.id != null)
 				return false;
-		} else if (!member.equals(other.member))
+		} else if (!id.equals(other.id))
 			return false;
 		if (paymentDate == null) {
 			if (other.paymentDate != null)
@@ -79,7 +77,12 @@ public class PaymentEntity {
 			return false;
 		if (Double.doubleToLongBits(transactionPrice) != Double.doubleToLongBits(other.transactionPrice))
 			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
 		return true;
 	}
-	
+
 }

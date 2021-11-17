@@ -2,12 +2,13 @@ package ecommercGesture.repositories;
 
 import java.util.Optional;
 
-import ecommercGesture.entities.PaymentEntity;
+import ecommercGesture.objects.Id;
+import ecommercGesture.objects.Payment;
 
 public interface PaymentRepository {
 	
-	int getNextId();
-	Optional<PaymentEntity> getPayment(int id);
-	int addPayment(PaymentEntity payment);
+	Id getNextId();
+	Optional<Payment> getPaymentById(Id id);
+	Id savePayment(Payment payment);
 
 }

@@ -1,8 +1,8 @@
 package ecommercGesture.services;
 
 import ecommercGesture.additionalClass.BillingInformation;
-import ecommercGesture.entities.PaymentEntity;
-import ecommercGesture.externalServices.ExternalPaymentService;
+import ecommercGesture.objects.Payment;
+import ecommercGesture.objects.Id;
 
 public class GlobalPaymentService {
 	
@@ -14,15 +14,15 @@ public class GlobalPaymentService {
 		this.externalPaymentService = externalPaymentService;
 	}
 	
-	public int getNextId() {
+	public Id getNextId() {
 		return paymentService.getNextId();
 	}
 
-	public PaymentEntity getPayment(int id) {
-		return paymentService.getPayment(id);
+	public Payment getPayment(Id id) {
+		return paymentService.getPaymentById(id);
 	}
 	
-	public int addPayment(PaymentEntity payment) {
+	public Id addPayment(Payment payment) {
 		return paymentService.addPayment(payment);
 	}
 	

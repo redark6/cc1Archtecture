@@ -2,12 +2,13 @@ package ecommercGesture.repositories;
 
 import java.util.Optional;
 
-import ecommercGesture.entities.Member;
+import ecommercGesture.objects.Id;
+import ecommercGesture.objects.Member;
 
 public interface MemberRepository {
 	
-	int getNextId();
-	Optional<Member> getMemberById(int id);
-	int addMember(Member member);
+	Id getNextId();
+	Optional<Member> getMemberById(Id id);
+	Id saveMember(Member member);
 	
 }

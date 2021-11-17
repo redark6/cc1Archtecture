@@ -1,29 +1,27 @@
 package ecommercGesture.additionalClass;
 
+import ecommercGesture.objects.Id;
+
 public class ApplicationResultIds {
 	
-	private final int memberId;
-	private final int paymentId;
+	private final Id memberId;
+	private final Id paymentId;
 	
-	private ApplicationResultIds(int memberId, int paymentId) {
+	private ApplicationResultIds(Id memberId, Id paymentId) {
 		this.memberId = memberId;
 		this.paymentId = paymentId;
 	}
 	
-    public static ApplicationResultIds of(int memberId, int paymentId) {
+    public static ApplicationResultIds of(Id memberId, Id paymentId) {
         return new ApplicationResultIds( memberId, paymentId);
     }
 	
-	public int getMemberId() {
+	public Id getMemberId() {
 		return memberId;
 	}
 	
-	public int getPaymentId() {
+	public Id getPaymentId() {
 		return paymentId;
 	}
-	
-	
-	
-	
 
 }
