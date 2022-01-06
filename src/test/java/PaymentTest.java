@@ -1,18 +1,17 @@
 package test.java;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ecommercGesture.defaultRepositoryImplementation.InMemoryPaymentRepository;
-import ecommercGesture.defaultRepositoryImplementation.SystemCalendar;
 import ecommercGesture.domain.Calendar;
-import ecommercGesture.objects.Id;
-import ecommercGesture.objects.Payment;
-import ecommercGesture.objects.User;
-import ecommercGesture.repositories.PaymentRepository;
-import ecommercGesture.services.PaymentService;
+import ecommercGesture.domain.objects.Id;
+import ecommercGesture.domain.objects.Payment;
+import ecommercGesture.domain.repositories.PaymentRepository;
+import ecommercGesture.domain.services.PaymentService;
+import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryPaymentRepository;
+import ecommercGesture.infrastructure.defaultRepositoryImplementation.SystemCalendar;
 
 public class PaymentTest {
 
@@ -26,9 +25,9 @@ public class PaymentTest {
 		paymentRepository = new InMemoryPaymentRepository();
 		paymentService = new PaymentService(paymentRepository);
 		calendar = new SystemCalendar();
-		User user = User.of(Id.of(1), "first", "first", "first", "password");
-		Payment first = Payment.of(paymentService.getNextId(),user,300.5,calendar.currentDate());
-		firstId = paymentService.addPayment(first);
+		firstId = paymentService.getNextId();
+		Payment first = Payment.of(firstId,Id.of(1),300.5,calendar.currentDate());
+		paymentService.addPayment(first);
 	}
 	
 	@Test
@@ -46,11 +45,9 @@ public class PaymentTest {
 	
 	@Test
 	public void addPayment() {
-		User user = User.of(Id.of(1), "test", "test", "test", "password");
-		Payment newPayment = Payment.of(paymentService.getNextId(),user,350.5,calendar.currentDate());
-		Id resultId = paymentService.addPayment(newPayment);
-		Payment paymentFromService = paymentService.getPaymentById(resultId);
-		assertEquals(true, newPayment.equals(paymentFromService));
+		Payment newPayment = Payment.of(paymentService.getNextId(),Id.of(1),350.5,calendar.currentDate());
+		Payment paymentResult = paymentService.addPayment(newPayment);
+		assertEquals(true, newPayment.equals(paymentResult));
 	}
 		
 	@Test

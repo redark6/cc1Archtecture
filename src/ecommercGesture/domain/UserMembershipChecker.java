@@ -1,6 +1,6 @@
 package ecommercGesture.domain;
 
-import ecommercGesture.objects.User;
+import ecommercGesture.domain.objects.User;
 
 public class UserMembershipChecker {
 	

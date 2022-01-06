@@ -1,30 +1,37 @@
 package test.java;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ecommercGesture.defaultRepositoryImplementation.InMemoryUserRepository;
-import ecommercGesture.objects.Id;
-import ecommercGesture.objects.User;
-import ecommercGesture.repositories.UserRepository;
-import ecommercGesture.services.UserService;
+import ecommercGesture.domain.objects.Id;
+import ecommercGesture.domain.objects.User;
+import ecommercGesture.domain.repositories.UserRepository;
+import ecommercGesture.domain.services.UserService;
+import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryUserRepository;
+
 
 public class UserTest {
 	
 	private static UserRepository userRepository;
 	private static UserService userService;
 	static Id firstId;
+	static User first;
 	
 	@BeforeClass
 	public static void setup() {
 		userRepository = new InMemoryUserRepository();
 		userService = new UserService(userRepository);
-		User first = User.of(userService.getNextId(), "first", "first", "first", "password");
-		firstId = userService.addUser(first);
+		firstId = userService.getNextId();
+		first = User.of(firstId, "first", "first", "first", "password");
+		userService.addUser(first);
+		
 	}
-	
+
 	@Test
 	public void getNextUserId() {
 		Id id1 = userService.getNextId();
@@ -39,10 +46,23 @@ public class UserTest {
 	}
 	
 	@Test
+	public void getAllUser() {
+		Id userId = userService.getNextId();
+		User newUser = User.of(userId, "test", "test", "test", "password");
+		userService.addUser(newUser);
+		List<User> userList = new ArrayList<User>();
+		userList.add(first);
+		userList.add(newUser);
+		List<User> result = userService.getAll();
+		assertEquals(true, result.get(0).equals(first));
+	}
+	
+	@Test
 	public void addUser() {
-		User newUser = User.of(userService.getNextId(), "test", "test", "test", "password");
-		Id resultId = userService.addUser(newUser);
-		User userFromService = userService.getUserById(resultId);
+		Id userId = userService.getNextId();
+		User newUser = User.of(userId, "test", "test", "test", "password");
+		userService.addUser(newUser);
+		User userFromService = userService.getUserById(userId);
 		assertEquals(true, newUser.equals(userFromService));
 	}
 	

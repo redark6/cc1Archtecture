@@ -1,28 +1,16 @@
 package ecommercGesture;
 
-import java.time.LocalDate;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import ecommercGesture.Dto.MembershipApplication;
-import ecommercGesture.additionalClass.BillingInformation;
-import ecommercGesture.additionalClass.MembershipDetails;
-import ecommercGesture.defaultRepositoryImplementation.InMemoryMemberRepository;
-import ecommercGesture.defaultRepositoryImplementation.InMemoryPaymentRepository;
-import ecommercGesture.defaultRepositoryImplementation.InMemoryUserRepository;
-import ecommercGesture.services.ExternalPaymentService;
-import ecommercGesture.objects.User;
-import ecommercGesture.repositories.MemberRepository;
-import ecommercGesture.repositories.PaymentRepository;
-import ecommercGesture.repositories.UserRepository;
-import ecommercGesture.services.GlobalPaymentService;
-import ecommercGesture.services.MemberService;
-import ecommercGesture.services.MembershipApplicationService;
-import ecommercGesture.services.PaymentService;
-import ecommercGesture.services.UserService;
-
+@SpringBootApplication
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		
+        final ConfigurableApplicationContext applicationContext = SpringApplication.run(Main.class, args);
+
+		/*
 		UserRepository userRepository = new InMemoryUserRepository();
 		UserService userService = new UserService(userRepository);
 		
@@ -45,6 +33,7 @@ public class Main {
 		MembershipApplicationService membershipApplicationService = new MembershipApplicationService(userService, memberService,globalPaymentService);
 		
 		membershipApplicationService.applyForMembership(application);
+		*/
 
 	}
 
