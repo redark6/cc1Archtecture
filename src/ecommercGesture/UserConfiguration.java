@@ -1,4 +1,4 @@
-package ecommercGesture;
+ package ecommercGesture;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +18,20 @@ import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveM
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMembershipByIdHandler;
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMemberships;
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMembershipsHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.AddProjectWorker;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.AddProjectWorkerCommandHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.CreateProject;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.CreateProjectCommandeHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.ModifyProject;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.ModifyProjectCommandHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.RemoveProjectWorker;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.RemoveProjectWorkerCommandeHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.queries.RetrieveProjectById;
+import ecommercGesture.application.projectQueriesCommandsEvent.queries.RetrieveProjectByIdHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.queries.RetrieveProjects;
+import ecommercGesture.application.projectQueriesCommandsEvent.queries.RetrieveProjectsByManagerId;
+import ecommercGesture.application.projectQueriesCommandsEvent.queries.RetrieveProjectsByManagerIdHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.queries.RetrieveProjectsHandler;
 import ecommercGesture.application.userQueriesCommandsEvents.commands.CreateUser;
 import ecommercGesture.application.userQueriesCommandsEvents.commands.CreateUserCommandHandler;
 import ecommercGesture.application.userQueriesCommandsEvents.commands.ModifyUserPassword;
@@ -36,10 +50,13 @@ import ecommercGesture.domain.services.GlobalPaymentService;
 import ecommercGesture.domain.services.MembershipService;
 import ecommercGesture.domain.services.MembershipApplicationService;
 import ecommercGesture.domain.services.PaymentService;
+import ecommercGesture.domain.services.ProjectCreationModificationService;
+import ecommercGesture.domain.services.ProjectService;
 import ecommercGesture.domain.services.UserService;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryBillingInformationRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryMembershipRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryPaymentRepository;
+import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryProjectRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryUserRepository;
 import kernel.Command;
 import kernel.CommandBus;
@@ -74,6 +91,11 @@ public class UserConfiguration {
     }
     
     @Bean
+    public ProjectService projectService() {
+        return new ProjectService(new InMemoryProjectRepository());
+    }
+    
+    @Bean
     public ExternalPaymentService externalPaymentService() {
         return new ExternalPaymentService();
     }
@@ -94,6 +116,11 @@ public class UserConfiguration {
     }
     
     @Bean
+    public ProjectCreationModificationService projectCreationModificationService() {
+        return new ProjectCreationModificationService(userService(),memberService(),projectService());
+    }
+    
+    @Bean
     public EventDispatcher<Event> eventEventDispatcher() {
         final Map<Class<? extends Event>, List<EventListener<? extends Event>>> listenerMap = new HashMap<>();
         listenerMap.put(CreateUserEvent.class, List.of(new CreateUserEventListener()));
@@ -109,6 +136,10 @@ public class UserConfiguration {
         commandHandlerMap.put(MembershipApply.class, new MembershipApplyCommandHandler(membershipApplicationService(),billingInformationService() ,eventEventDispatcher()));
         commandHandlerMap.put(MembershipRenew.class, new MembershipRenewCommandHandler(membershipApplicationService(),eventEventDispatcher()));
         commandHandlerMap.put(StopAutomaticRenew.class, new StopAutomaticRenewCommandHandler(membershipApplicationService(),eventEventDispatcher()));
+        commandHandlerMap.put(AddProjectWorker.class, new AddProjectWorkerCommandHandler(projectCreationModificationService(),eventEventDispatcher()));
+        commandHandlerMap.put(CreateProject.class, new CreateProjectCommandeHandler(projectCreationModificationService(),projectService(),eventEventDispatcher()));
+        commandHandlerMap.put(ModifyProject.class, new ModifyProjectCommandHandler(projectCreationModificationService(),projectService(),eventEventDispatcher()));
+        commandHandlerMap.put(RemoveProjectWorker.class, new RemoveProjectWorkerCommandeHandler(projectCreationModificationService(),eventEventDispatcher()));
         return new SimpleCommandBus(commandHandlerMap);
     }
 
@@ -119,6 +150,9 @@ public class UserConfiguration {
         queryHandlerMap.put(RetrieveUsers.class, new RetrieveUsersHandler(userService()));
         queryHandlerMap.put(RetrieveMembershipById.class, new RetrieveMembershipByIdHandler(memberService()));
         queryHandlerMap.put(RetrieveMemberships.class, new RetrieveMembershipsHandler(memberService()));
+        queryHandlerMap.put(RetrieveProjectById.class, new RetrieveProjectByIdHandler(projectService()));
+        queryHandlerMap.put(RetrieveProjects.class, new RetrieveProjectsHandler(projectService()));
+        queryHandlerMap.put(RetrieveProjectsByManagerId.class, new RetrieveProjectsByManagerIdHandler(projectService()));
         return new SimpleQueryBus(queryHandlerMap);
     }
 }
