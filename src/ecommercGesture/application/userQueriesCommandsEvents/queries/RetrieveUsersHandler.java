@@ -20,7 +20,7 @@ public class RetrieveUsersHandler implements QueryHandler<RetrieveUsers, UsersDT
     @Override
     public UsersDTO handle(RetrieveUsers query) {
         List<User> users = userService.getAll();
-        UsersDTO usersResponseResult = UsersDTO.of(users.stream().map(user -> UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword())).collect(Collectors.toList()));
+        UsersDTO usersResponseResult = UsersDTO.of(users.stream().map(user -> UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword(), user.getWorkingState().GetState())).collect(Collectors.toList()));
         return usersResponseResult;
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.AddProjectWorker;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.CloseProject;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.CreateProject;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.ModifyProject;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.RemoveProjectWorker;
@@ -37,6 +38,9 @@ import ecommercGesture.infrastructure.exception.InvalidProjectBillRateException;
 import ecommercGesture.infrastructure.exception.InvalidProjectPriceException;
 import ecommercGesture.infrastructure.exception.InvalideDurationException;
 import ecommercGesture.infrastructure.exception.NotMemberException;
+import ecommercGesture.infrastructure.exception.ProjectAlreadyFinishedException;
+import ecommercGesture.infrastructure.exception.ProjectCannotCloseUnknownWorkerException;
+import ecommercGesture.infrastructure.exception.ProjectCannotEditFinishedException;
 import ecommercGesture.infrastructure.exception.UnknownJobsException;
 import ecommercGesture.infrastructure.exception.UnknownSkillsException;
 import ecommercGesture.infrastructure.exception.UserAlreadyWorkOnProjectException;
@@ -102,6 +106,13 @@ public class ProjectController {
     public ResponseEntity<ProjectDTO> removeWorker(@RequestParam(name = "projectId") int projectId, @RequestBody @Valid WorkerDTO request) {
     	final RemoveProjectWorker removeProjectWorker = new RemoveProjectWorker(projectId, request);
     	final ProjectDTO projectResponseResult = commandBus.send(removeProjectWorker);
+        return ResponseEntity.ok(projectResponseResult);
+    }
+    
+    @PostMapping(value ="/close")
+    public ResponseEntity<ProjectDTO> closeProject(@RequestParam(name = "projectId") int projectId) {
+    	final CloseProject closeProject = new CloseProject(projectId);
+    	final ProjectDTO projectResponseResult = commandBus.send(closeProject);
         return ResponseEntity.ok(projectResponseResult);
     }
     
@@ -192,6 +203,27 @@ public class ProjectController {
     @ExceptionHandler(UserNotMemberException.class)
     public String handleUserNotMemberException(
     		UserNotMemberException ex) {
+        return ex.getMessage();
+    }
+    
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ProjectCannotEditFinishedException.class)
+    public String handleProjectCannotEditFinishedException(
+    		ProjectCannotEditFinishedException ex) {
+        return ex.getMessage();
+    }
+    
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ProjectAlreadyFinishedException.class)
+    public String handleProjectAlreadyFinishedException(
+    		ProjectAlreadyFinishedException ex) {
+        return ex.getMessage();
+    }
+    
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ProjectCannotCloseUnknownWorkerException.class)
+    public String handleProjectCannotCloseUnknownWorkerException(
+    		ProjectCannotCloseUnknownWorkerException ex) {
         return ex.getMessage();
     }
 }

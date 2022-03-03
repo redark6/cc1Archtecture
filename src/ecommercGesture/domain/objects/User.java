@@ -2,6 +2,8 @@ package ecommercGesture.domain.objects;
 
 import java.util.Objects;
 
+import ecommercGesture.domain.enums.WorkerStates;
+
 public class User {
 	
 	private final Id id;
@@ -9,17 +11,19 @@ public class User {
 	private final String lastName;
 	private String userName;
 	private String password;
+	private WorkerStates workingState;
 
-	private User(Id id, String name, String lastName, String userName, String password) {
+	private User(Id id, String name, String lastName, String userName, String password, WorkerStates workingState) {
 		this.id = id;
 		this.name = Objects.requireNonNull(name,"User name must be not null");
 		this.lastName = Objects.requireNonNull(lastName,"User lastname must be not null");
 		this.userName = Objects.requireNonNull(userName,"UserName must be not null");
 		this.password = Objects.requireNonNull(password,"User password must be not null");
+		this.workingState = workingState;
 	}
 
-    public static User of(Id id, String name, String lastname, String userName, String password) {
-        return new User(id, name, lastname, userName, password);
+    public static User of(Id id, String name, String lastname, String userName, String password, WorkerStates workingState) {
+        return new User(id, name, lastname, userName, password, workingState);
     }
 
 	public Id getId() {
@@ -49,10 +53,19 @@ public class User {
 	public void changePassword(String password) {
 		this.password = Objects.requireNonNull(password,"User password must be not null");
 	}
+	
+	public WorkerStates getWorkingState() {
+		return workingState;
+	}
+
+	public void setWorkingState(WorkerStates workingState) {
+		this.workingState = workingState;
+	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", lastName=" + lastName + ", password=" + password + "]";
+		return "User [id=" + id + ", name=" + name + ", lastName=" + lastName + ", userName=" + userName + ", password="
+				+ password + ", state=" + workingState + "]";
 	}
 
 	@Override
@@ -63,6 +76,8 @@ public class User {
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((workingState == null) ? 0 : workingState.hashCode());
+		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
 		return result;
 	}
 
@@ -95,7 +110,14 @@ public class User {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
+		if (workingState != other.workingState)
+			return false;
+		if (userName == null) {
+			if (other.userName != null)
+				return false;
+		} else if (!userName.equals(other.userName))
+			return false;
 		return true;
 	}
-	
+
 }

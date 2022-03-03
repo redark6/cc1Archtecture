@@ -2,6 +2,7 @@ package ecommercGesture.domain.services;
 
 import java.util.List;
 
+import ecommercGesture.domain.enums.WorkerStates;
 import ecommercGesture.domain.objects.Id;
 import ecommercGesture.domain.objects.User;
 import ecommercGesture.domain.repositories.UserRepository;
@@ -40,6 +41,18 @@ public class UserService {
 	public User changePassword(Id id, String password) {
 		User user = getUserById(id);
 		user.changePassword(password);
+		return userRepository.saveUser(user);
+	}
+	
+	public User freeWorker(Id userId) {
+		User user = getUserById(userId);
+		user.setWorkingState(WorkerStates.OPEN_TO_WORK);
+		return userRepository.saveUser(user);
+	}
+	
+	public User putToWorkWoker(Id userId) {
+		User user = getUserById(userId);
+		user.setWorkingState(WorkerStates.BUSY);
 		return userRepository.saveUser(user);
 	}
 	

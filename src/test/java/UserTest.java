@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ecommercGesture.domain.enums.WorkerStates;
 import ecommercGesture.domain.objects.Id;
 import ecommercGesture.domain.objects.User;
 import ecommercGesture.domain.repositories.UserRepository;
@@ -27,7 +28,7 @@ public class UserTest {
 		userRepository = new InMemoryUserRepository();
 		userService = new UserService(userRepository);
 		firstId = userService.getNextId();
-		first = User.of(firstId, "first", "first", "first", "password");
+		first = User.of(firstId, "first", "first", "first", "password",WorkerStates.OPEN_TO_WORK);
 		userService.addUser(first);
 		
 	}
@@ -48,7 +49,7 @@ public class UserTest {
 	@Test
 	public void getAllUser() {
 		Id userId = userService.getNextId();
-		User newUser = User.of(userId, "test", "test", "test", "password");
+		User newUser = User.of(userId, "test", "test", "test", "password",WorkerStates.OPEN_TO_WORK);
 		userService.addUser(newUser);
 		List<User> userList = new ArrayList<User>();
 		userList.add(first);
@@ -60,7 +61,7 @@ public class UserTest {
 	@Test
 	public void addUser() {
 		Id userId = userService.getNextId();
-		User newUser = User.of(userId, "test", "test", "test", "password");
+		User newUser = User.of(userId, "test", "test", "test", "password",WorkerStates.OPEN_TO_WORK);
 		userService.addUser(newUser);
 		User userFromService = userService.getUserById(userId);
 		assertEquals(true, newUser.equals(userFromService));

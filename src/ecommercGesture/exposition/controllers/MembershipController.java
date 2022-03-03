@@ -19,14 +19,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import ecommercGesture.application.memberQueriesCommandsEvents.commands.AddScheduledPayment;
 import ecommercGesture.application.memberQueriesCommandsEvents.commands.MembershipApply;
 import ecommercGesture.application.memberQueriesCommandsEvents.commands.MembershipRenew;
 import ecommercGesture.application.memberQueriesCommandsEvents.commands.StopAutomaticRenew;
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMembershipById;
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMemberships;
+import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveScheduledPaymentById;
+import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveScheduledPayments;
+import ecommercGesture.exposition.memberDTO.AddScheduledPaymentDTO;
 import ecommercGesture.exposition.memberDTO.MembershipApplyDTO;
 import ecommercGesture.exposition.memberDTO.MembershipDTO;
 import ecommercGesture.exposition.memberDTO.MembershipsDTO;
+import ecommercGesture.exposition.memberDTO.ScheduledPaymentDTO;
+import ecommercGesture.exposition.memberDTO.ScheduledPaymentsDTO;
 import ecommercGesture.infrastructure.exception.InvalidMembershipDurationException;
 import ecommercGesture.infrastructure.exception.InvalidUserException;
 import ecommercGesture.infrastructure.exception.IsAlreadyMemberException;
@@ -83,6 +89,25 @@ public class MembershipController {
     public ResponseEntity<MembershipDTO> stopAutomaticMembershipRenew(@RequestParam(name = "id") int userId) {
     	final StopAutomaticRenew stopAutomaticRenew = new StopAutomaticRenew(userId);
     	final MembershipDTO membersResponseResult = commandBus.send(stopAutomaticRenew);
+        return ResponseEntity.ok(membersResponseResult);
+    }
+    
+    @GetMapping(value = "/scheduledPayment",produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ScheduledPaymentDTO> getScheduledPaymentById(@RequestParam(name = "id") int id) {
+       final ScheduledPaymentDTO memberResponseResult = queryBus.send(new RetrieveScheduledPaymentById(id));
+       return ResponseEntity.ok(memberResponseResult);
+    }
+
+    @GetMapping(value = "/scheduledPayment/all", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ScheduledPaymentsDTO> getAllScheduledPayment() {
+        final ScheduledPaymentsDTO membersResponseResult = queryBus.send(new RetrieveScheduledPayments());
+        return ResponseEntity.ok(membersResponseResult);
+    }
+    
+    @PostMapping(value ="/addpayment", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ScheduledPaymentDTO> addPayment(@RequestParam(name = "userPayeId") int userPayeId, @RequestBody @Valid AddScheduledPaymentDTO request) {
+    	final AddScheduledPayment addScheduledPayment = new AddScheduledPayment(request, userPayeId);
+    	ScheduledPaymentDTO membersResponseResult = commandBus.send(addScheduledPayment);
         return ResponseEntity.ok(membersResponseResult);
     }
     

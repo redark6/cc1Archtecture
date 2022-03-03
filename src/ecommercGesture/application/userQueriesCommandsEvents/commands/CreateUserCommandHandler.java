@@ -1,6 +1,7 @@
 package ecommercGesture.application.userQueriesCommandsEvents.commands;
 
 import ecommercGesture.application.userQueriesCommandsEvents.events.CreateUserEvent;
+import ecommercGesture.domain.enums.WorkerStates;
 import ecommercGesture.domain.objects.Id;
 import ecommercGesture.domain.objects.User;
 import ecommercGesture.domain.services.UserService;
@@ -21,9 +22,9 @@ public class CreateUserCommandHandler implements CommandHandler<CreateUser, User
 
     public UserDTO handle(CreateUser createUser) {
         final Id userId = userService.getNextId();
-        User user = userService.addUser(User.of(userId, createUser.name, createUser.lastName,createUser.userName, createUser.password));
+        User user = userService.addUser(User.of(userId, createUser.name, createUser.lastName,createUser.userName, createUser.password,WorkerStates.OPEN_TO_WORK));
         eventDispatcher.dispatch(CreateUserEvent.of(userId));
-        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword());
+        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword(), user.getWorkingState().GetState());
         return userResponseResult;
     }
 }

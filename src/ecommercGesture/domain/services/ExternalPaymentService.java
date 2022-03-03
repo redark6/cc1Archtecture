@@ -11,5 +11,10 @@ public class ExternalPaymentService {
 		// simulate payment from an external bank service
 		return true;
 	}
+	
+	public boolean proceedToScheduledPayment(BillingInformation billingPayer,BillingInformation billingReceiver, double transactionPrice) {
+		// simulate payment from an external bank service
+		return true;
+	}
 
 }

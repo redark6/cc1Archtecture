@@ -23,7 +23,7 @@ public class ModifyUserUserNameCommandHandler implements CommandHandler<ModifyUs
     	Id userId = Id.of(command.userId);
     	User user = userService.ChangeUserName(userId, command.userName);
     	eventDispatcher.dispatch(CreateUserEvent.of(userId));
-        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword());
+        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword(), user.getWorkingState().GetState());
     	return userResponseResult;
     }
 

@@ -18,7 +18,7 @@ public class RetrieveUserByIdHandler implements QueryHandler<RetrieveUserById, U
     public UserDTO handle(RetrieveUserById query) {
     	Id userId = Id.of(query.userId);
     	User user = userService.getUserById(userId);
-        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword());
+        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword(), user.getWorkingState().GetState());
         return userResponseResult;
     }
 }

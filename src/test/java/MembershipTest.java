@@ -2,13 +2,13 @@ package test.java;
 
 import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Member;
 import java.time.LocalDate;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ecommercGesture.domain.Calendar;
+import ecommercGesture.domain.enums.WorkerStates;
 import ecommercGesture.domain.objects.Id;
 import ecommercGesture.domain.objects.Membership;
 import ecommercGesture.domain.objects.User;
@@ -30,7 +30,7 @@ public class MembershipTest {
 		membershipService = new MembershipService(membershipRepository);
 		calendar = new SystemCalendar();
 		LocalDate today = calendar.currentDate();
-		User user = User.of(Id.of(1), "first", "first", "first", "password");
+		User user = User.of(Id.of(1), "first", "first", "first", "password",WorkerStates.OPEN_TO_WORK);
 		firstId = membershipService.getNextId();
 		Membership membership = Membership.of(firstId,Id.of(1),5.5, today, today.plusDays(360), true);
 		membershipService.addMembership(membership);
@@ -51,7 +51,7 @@ public class MembershipTest {
 	
 	@Test
 	public void addMember() {
-		User user = User.of(Id.of(1), "test", "test", "test", "password");
+		User user = User.of(Id.of(1), "test", "test", "test", "password",WorkerStates.OPEN_TO_WORK);
 		LocalDate today = calendar.currentDate();
 		Membership newMembership = Membership.of(membershipService.getNextId(), Id.of(1),5.0,today, today.plusDays(600), true);
 		Membership membershipresult = membershipService.addMembership(newMembership);

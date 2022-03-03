@@ -23,7 +23,7 @@ public class ModifyUserPasswordCommandHandler implements CommandHandler<ModifyUs
     	Id userId = Id.of(command.userId);
     	User user = userService.changePassword(userId, command.password);
     	eventDispatcher.dispatch(ModifyUserPasswordEvent.of(userId));
-        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword());
+        UserDTO userResponseResult = UserDTO.of(user.getId().getId(), user.getName(), user.getLastName(), user.getUserName(), user.getPassword(), user.getWorkingState().GetState());
     	return userResponseResult;
     }
 

@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ecommercGesture.domain.Calendar;
+import ecommercGesture.domain.enums.WorkerStates;
 import ecommercGesture.domain.objects.BillingInformation;
 import ecommercGesture.domain.objects.Id;
 import ecommercGesture.domain.objects.Membership;
@@ -17,6 +18,7 @@ import ecommercGesture.domain.objects.User;
 import ecommercGesture.domain.repositories.BillingInformationRepository;
 import ecommercGesture.domain.repositories.MembershipRepository;
 import ecommercGesture.domain.repositories.PaymentRepository;
+import ecommercGesture.domain.repositories.ScheduledPaymentRepository;
 import ecommercGesture.domain.repositories.UserRepository;
 import ecommercGesture.domain.services.BillingInformationService;
 import ecommercGesture.domain.services.ExternalPaymentService;
@@ -24,10 +26,12 @@ import ecommercGesture.domain.services.GlobalPaymentService;
 import ecommercGesture.domain.services.MembershipApplicationService;
 import ecommercGesture.domain.services.MembershipService;
 import ecommercGesture.domain.services.PaymentService;
+import ecommercGesture.domain.services.ScheduledPaymentService;
 import ecommercGesture.domain.services.UserService;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryBillingInformationRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryMembershipRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryPaymentRepository;
+import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryScheduledPaymentRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryUserRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.SystemCalendar;
 
@@ -37,9 +41,11 @@ public class MemberApplicationServiceTest {
 	private static PaymentRepository paymentRepository;
 	private static UserRepository userRepository;
 	private static BillingInformationRepository billingInformationRepository;
-
+	private static ScheduledPaymentRepository scheduledPaymentRepository;
+	
 	private static PaymentService paymentService;
 	private static ExternalPaymentService externalPaymentService;
+	private static ScheduledPaymentService scheduledPaymentService;
 	private static GlobalPaymentService globalPaymentService;
 	private static UserService userService;
 	private static MembershipService membershipService;
@@ -56,10 +62,12 @@ public class MemberApplicationServiceTest {
 		userRepository = new InMemoryUserRepository();
 		userRepository = new InMemoryUserRepository();
 		billingInformationRepository = new InMemoryBillingInformationRepository();
+		scheduledPaymentRepository = new InMemoryScheduledPaymentRepository();
 		
 		paymentService = new PaymentService(paymentRepository);
 		externalPaymentService = new ExternalPaymentService();
-		globalPaymentService = new GlobalPaymentService(paymentService, externalPaymentService);
+		scheduledPaymentService = new ScheduledPaymentService(scheduledPaymentRepository);
+		globalPaymentService = new GlobalPaymentService(paymentService, externalPaymentService, scheduledPaymentService);
 		userService = new UserService(userRepository);
 		membershipService = new MembershipService(membershipRepository);
 		billingInformationService = new BillingInformationService(billingInformationRepository);
@@ -71,7 +79,7 @@ public class MemberApplicationServiceTest {
 
 	@Test
 	public void memberApplication() throws Exception {
-		User first = User.of(Id.of(1), "first", "first", "first", "password");
+		User first = User.of(Id.of(1), "first", "first", "first", "password",WorkerStates.OPEN_TO_WORK);
 		userService.addUser(first);
 		MembershipDetails details = MembershipDetails.of(432.99, 365);
 		BillingInformation billing = BillingInformation.of(Id.of(1),Id.of(1), "1545454895432578" ,"05/25", "458", "chouli redha");

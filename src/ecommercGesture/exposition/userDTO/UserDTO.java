@@ -8,17 +8,19 @@ public class UserDTO {
     public String lastName;
     public String userName;
     public String password;
+    public String workingState;
     
-    public static UserDTO of(int id, String name, String lastName,  String userName, String password) {
-    	return new UserDTO(id,name,lastName,userName,password);
+    public static UserDTO of(int id, String name, String lastName,  String userName, String password, String workingState) {
+    	return new UserDTO(id,name,lastName,userName,password, workingState);
     }
 
-    private UserDTO(int id, String name, String lastName,  String userName, String password) {
+    private UserDTO(int id, String name, String lastName,  String userName, String password, String workingState) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.userName = userName;
         this.password = password;
+        this.workingState = workingState;
     }
 
     @Override
@@ -28,7 +30,8 @@ public class UserDTO {
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", userName=" + userName + '\'' +
-                ", password=" + password +
+                ", password=" + password + '\'' +
+                ", workingState=" + workingState + 
                 '}';
     }
 }

@@ -12,6 +12,9 @@ import ecommercGesture.domain.objects.Project;
 import ecommercGesture.infrastructure.exception.InvalidProjectBillRateException;
 import ecommercGesture.infrastructure.exception.InvalidProjectPriceException;
 import ecommercGesture.infrastructure.exception.InvalideDurationException;
+import ecommercGesture.infrastructure.exception.ProjectAlreadyFinishedException;
+import ecommercGesture.infrastructure.exception.ProjectCannotCloseUnknownWorkerException;
+import ecommercGesture.infrastructure.exception.ProjectCannotEditFinishedException;
 import ecommercGesture.infrastructure.exception.UnknownJobsException;
 import ecommercGesture.infrastructure.exception.UnknownSkillsException;
 import ecommercGesture.infrastructure.exception.UserAlreadyWorkOnProjectException;
@@ -56,7 +59,7 @@ public class ProjectCreationModificationService {
 		}else if(startProjectDate.isBefore(today) && startProjectDate.plusDays(duration).isAfter(today)) {
 			return ProjectStates.IN_PROGRESS;
 		}else {
-			return ProjectStates.FINISHED;
+			throw ProjectCannotEditFinishedException.of();
 		}
 	}
 
@@ -140,6 +143,7 @@ public class ProjectCreationModificationService {
 		Project project = this.projectService.getProjectById(id);
 		List<Id> workers = project.getWorkerIds();
 		if(!workerAlreadyWorkInProject(workers, workerId)) {
+			userService.putToWorkWoker(workerId);
 			workers.add(workerId);
 			project.setWorkerIds(workers);
 			return this.projectService.saveProject(project);
@@ -152,6 +156,7 @@ public class ProjectCreationModificationService {
 		Project project = this.projectService.getProjectById(id);
 		List<Id> workers = project.getWorkerIds();
 		if(workerAlreadyWorkInProject(workers, workerId)) {
+			userService.freeWorker(workerId);
 			workers.remove(workerId);
 			project.setWorkerIds(workers);
 			return this.projectService.saveProject(project);
@@ -173,6 +178,24 @@ public class ProjectCreationModificationService {
 		}else {
 			throw UserNotfoundException.withId(workerId);
 		}
+	}
+	
+	public Project closeProject(Id projectId) {
+		Project project = this.projectService.getProjectById(projectId);
+		if(project.getState().equals(ProjectStates.FINISHED)) {
+			throw ProjectAlreadyFinishedException.withId(project.getId());
+		}
+		List<Id> workers = project.getWorkerIds();
+		try {
+			workers.forEach(worker ->{
+				this.userService.freeWorker(worker);
+			});
+		} catch (Exception e) {
+			throw ProjectCannotCloseUnknownWorkerException.withId(project.getId());
+		}
+		project.setState(ProjectStates.FINISHED);
+		return this.projectService.saveProject(project);
+		
 	}
 
 }

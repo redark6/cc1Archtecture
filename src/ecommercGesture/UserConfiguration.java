@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import ecommercGesture.application.memberQueriesCommandsEvents.commands.AddScheduledPayment;
+import ecommercGesture.application.memberQueriesCommandsEvents.commands.AddScheduledPaymentCommandHandler;
 import ecommercGesture.application.memberQueriesCommandsEvents.commands.MembershipApply;
 import ecommercGesture.application.memberQueriesCommandsEvents.commands.MembershipApplyCommandHandler;
 import ecommercGesture.application.memberQueriesCommandsEvents.commands.MembershipRenew;
@@ -18,8 +20,14 @@ import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveM
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMembershipByIdHandler;
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMemberships;
 import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveMembershipsHandler;
+import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveScheduledPaymentById;
+import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveScheduledPaymentByIdHandler;
+import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveScheduledPayments;
+import ecommercGesture.application.memberQueriesCommandsEvents.queries.RetrieveScheduledPaymentsHandler;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.AddProjectWorker;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.AddProjectWorkerCommandHandler;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.CloseProject;
+import ecommercGesture.application.projectQueriesCommandsEvent.commands.CloseProjectCommandeHandler;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.CreateProject;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.CreateProjectCommandeHandler;
 import ecommercGesture.application.projectQueriesCommandsEvent.commands.ModifyProject;
@@ -52,11 +60,13 @@ import ecommercGesture.domain.services.MembershipApplicationService;
 import ecommercGesture.domain.services.PaymentService;
 import ecommercGesture.domain.services.ProjectCreationModificationService;
 import ecommercGesture.domain.services.ProjectService;
+import ecommercGesture.domain.services.ScheduledPaymentService;
 import ecommercGesture.domain.services.UserService;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryBillingInformationRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryMembershipRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryPaymentRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryProjectRepository;
+import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryScheduledPaymentRepository;
 import ecommercGesture.infrastructure.defaultRepositoryImplementation.InMemoryUserRepository;
 import kernel.Command;
 import kernel.CommandBus;
@@ -96,6 +106,11 @@ public class UserConfiguration {
     }
     
     @Bean
+    public ScheduledPaymentService scheduledPaymentService() {
+        return new ScheduledPaymentService(new InMemoryScheduledPaymentRepository());
+    }
+    
+    @Bean
     public ExternalPaymentService externalPaymentService() {
         return new ExternalPaymentService();
     }
@@ -107,7 +122,7 @@ public class UserConfiguration {
     
     @Bean
     public GlobalPaymentService globalPaymentService() {
-        return new GlobalPaymentService(paymentService(),externalPaymentService());
+        return new GlobalPaymentService(paymentService(),externalPaymentService(),scheduledPaymentService());
     }
     
     @Bean
@@ -140,6 +155,8 @@ public class UserConfiguration {
         commandHandlerMap.put(CreateProject.class, new CreateProjectCommandeHandler(projectCreationModificationService(),projectService(),eventEventDispatcher()));
         commandHandlerMap.put(ModifyProject.class, new ModifyProjectCommandHandler(projectCreationModificationService(),projectService(),eventEventDispatcher()));
         commandHandlerMap.put(RemoveProjectWorker.class, new RemoveProjectWorkerCommandeHandler(projectCreationModificationService(),eventEventDispatcher()));
+        commandHandlerMap.put(AddScheduledPayment.class, new AddScheduledPaymentCommandHandler(globalPaymentService(),billingInformationService(),eventEventDispatcher()));
+        commandHandlerMap.put(CloseProject.class, new CloseProjectCommandeHandler(projectCreationModificationService(),eventEventDispatcher()));
         return new SimpleCommandBus(commandHandlerMap);
     }
 
@@ -153,6 +170,8 @@ public class UserConfiguration {
         queryHandlerMap.put(RetrieveProjectById.class, new RetrieveProjectByIdHandler(projectService()));
         queryHandlerMap.put(RetrieveProjects.class, new RetrieveProjectsHandler(projectService()));
         queryHandlerMap.put(RetrieveProjectsByManagerId.class, new RetrieveProjectsByManagerIdHandler(projectService()));
+        queryHandlerMap.put(RetrieveScheduledPaymentById.class, new RetrieveScheduledPaymentByIdHandler(scheduledPaymentService()));
+        queryHandlerMap.put(RetrieveScheduledPayments.class, new RetrieveScheduledPaymentsHandler(scheduledPaymentService()));
         return new SimpleQueryBus(queryHandlerMap);
     }
 }
